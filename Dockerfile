@@ -4,6 +4,14 @@ FROM golang:1.23
 # Establece el directorio de trabajo en /app
 WORKDIR /app
 
+ENV HOST 0.0.0.0
+ENV PORT 8080
+ENV DB_USER auth_bd_brto_user
+ENV DB_PASSWORD 2zDlYJVxcvrWXXleEzNGCR825VHCckrC
+ENV DB_NAME auth_bd_brto
+ENV DB_HOST dpg-cripfejv2p9s738m9m5g-a.oregon-postgres.render.com
+ENV DB_PORT 5432
+
 # Copia el contenido de la carpeta src a /app
 COPY src/ .
 

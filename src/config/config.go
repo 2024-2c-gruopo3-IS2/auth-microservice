@@ -16,7 +16,7 @@ var err error
 
 func InitDB() {
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_USER"),
@@ -25,6 +25,7 @@ func InitDB() {
 	)
 	
 	for retries := 5; retries > 0; retries-- {
+		fmt.Println("DNS: ", dsn)
 		DB, err = sqlx.Connect("postgres", dsn)
         if err == nil {
             if err = DB.Ping(); err == nil {
