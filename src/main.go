@@ -22,6 +22,8 @@ func main() {
 	{
 		authRoutes.POST("/signup", controllers.SignupHandler)
 		authRoutes.POST("/signin", controllers.SigninHandler)
+		authRoutes.POST("/get-email", controllers.GetEmailFromTokenHandler)
+
 	}
 
 	port := os.Getenv("PORT")

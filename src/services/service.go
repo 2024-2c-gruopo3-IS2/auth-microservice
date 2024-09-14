@@ -43,3 +43,13 @@ func LoginUser(email, password string, isAdmin bool) (string, error) {
 
 	return token, nil
 }
+
+
+// GetEmailFromToken validates the token and returns the user's email
+func GetEmailFromToken(token string) (string, error) {
+    claims, err := utils.ValidateToken(token)
+    if err != nil {
+        return "", errors.New("invalid or expired token")
+    }
+    return claims.Email, nil
+}

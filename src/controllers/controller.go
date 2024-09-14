@@ -60,3 +60,23 @@ func SigninHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
+
+
+func GetEmailFromTokenHandler(c *gin.Context) {
+    var req struct {
+        Token string `json:"token" binding:"required"`
+    }
+
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    email, err := services.GetEmailFromToken(req.Token)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"email": email})
+}
