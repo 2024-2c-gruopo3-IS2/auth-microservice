@@ -26,6 +26,7 @@ services:
       DB_NAME: auth_db
       DB_HOST: db
       DB_PORT: 5432
+      SSL_MODE: disable
     depends_on:
       - db
 
