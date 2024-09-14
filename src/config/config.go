@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
 var DB *sqlx.DB
+var err error
 
 func InitDB() {
-	var err error
+
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
@@ -21,11 +23,19 @@ func InitDB() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
-	DB, err = sqlx.Connect("postgres", dsn)
-	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
-	}
-	fmt.Println("Successfully connected to the database")
+	
+	for retries := 5; retries > 0; retries-- {
+		DB, err = sqlx.Connect("postgres", dsn)
+        if err == nil {
+            if err = DB.Ping(); err == nil {
+                log.Println("Successfully connected to the database")
+                break
+            }
+        }
+
+        log.Printf("Error connecting to the database: %v. Retrying in 5 seconds...", err)
+        time.Sleep(1 * time.Second)
+    }
 
 	createTables()
 }

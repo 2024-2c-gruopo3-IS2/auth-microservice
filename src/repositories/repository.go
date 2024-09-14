@@ -13,7 +13,7 @@ func CreateUser(user *models.User, isAdmin bool) error {
 	query := "INSERT INTO " + table + " (email, password) VALUES ($1, $2)"
 	_, err := config.DB.Exec(query, user.Email, user.Password)
 	if err != nil {
-		return errors.New("error creating user: " + err.Error())
+		return errors.New("User already exists")
 	}
 	return nil
 }

@@ -1,0 +1,37 @@
+services:
+  test_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+
+  api:
+    container_name: auth_microservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+        HOST: 0.0.0.0
+        PORT: 8080
+        DB_USER: testuser
+        DB_PASSWORD: testpassword
+        DB_NAME: testdb
+        DB_HOST: test_db
+        DB_PORT: 5432
+    ports:
+      - "8080:8080"
+    depends_on:
+      - test_db
+
+  tests:
+    container_name: tests
+    build: .
+    environment:
+      API_HOST: api
+      API_PORT: 8080
+    depends_on:
+      - api
+    entrypoint: ["go", "test", "./..."]

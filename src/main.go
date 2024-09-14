@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+
+
 	config.InitDB()
 
 	router := gin.Default()

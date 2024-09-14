@@ -22,6 +22,11 @@ func SignupHandler(c *gin.Context) {
 
 	_, err := services.RegisterUser(req.Email, req.Password, req.IsAdmin)
 	if err != nil {
+		if err.Error() == "User already exists" {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
