@@ -22,7 +22,7 @@ func main() {
 	{
 		authRoutes.POST("/signup", controllers.SignupHandler)
 		authRoutes.POST("/signin", controllers.SigninHandler)
-		authRoutes.POST("/get-email", controllers.GetEmailFromTokenHandler)
+		authRoutes.GET("/get-email-from-token", controllers.GetEmailFromTokenHandler)
 
 	}
 
