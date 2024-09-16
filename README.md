@@ -11,4 +11,3 @@ curl -X POST https://auth-microservice-vvr6.onrender.com/auth/signin \
 curl -X GET https://auth-microservice-vvr6.onrender.com/auth/get-email-from-token \
 -H "Content-Type: application/json" \
 -d '{"token": "your_token_here"}'
-
