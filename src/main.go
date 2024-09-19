@@ -24,6 +24,8 @@ func main() {
 		authRoutes.POST("/signin", controllers.SigninHandler)
 		authRoutes.GET("/get-email-from-token", controllers.GetEmailFromTokenHandler)
 		authRoutes.POST("/block-user", controllers.BlockUserHandler)
+		authRoutes.POST("/unblock-user", controllers.UnblockUserHandler)
+
 	}
 
 	port := os.Getenv("PORT")

@@ -9,12 +9,15 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/joho/godotenv"
 )
 
 var DB *sqlx.DB
 var err error
 
 func InitDB() {
+
+	godotenv.Load()
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		os.Getenv("DB_HOST"),

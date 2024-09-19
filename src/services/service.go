@@ -59,20 +59,20 @@ func GetEmailFromToken(token string) (string, error) {
 }
 
 func BlockUser(email string) error {
-	query := `UPDATE users SET is_blocked = TRUE WHERE email = $1`
-	result, err := config.DB.Exec(query, email)
+
+	err := repositories.BlockUser(email)
+
 	if err != nil {
-		return fmt.Errorf("failed to block user: %v", err)
+		return errors.New("failed to block user")
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	return nil
+}
+
+func UnblockUser(email string) error {
+	err := repositories.UnblockUser(email)
 	if err != nil {
-		return fmt.Errorf("could not determine affected rows: %v", err)
+		return errors.New("failed to unblock user")
 	}
-
-	if rowsAffected == 0 {
-		return fmt.Errorf("user not found")
-	}
-
 	return nil
 }
