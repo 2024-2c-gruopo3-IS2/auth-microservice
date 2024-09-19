@@ -36,6 +36,10 @@ func LoginUser(email, password string, isAdmin bool) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
+	if user.IsBlocked {
+		return "", errors.New("user is blocked")
+	}
+
 	token, err := utils.GenerateJWT(user.Email)
 	if err != nil {
 		return "", err
@@ -52,4 +56,23 @@ func GetEmailFromToken(token string) (string, error) {
         return "", errors.New("invalid or expired token")
     }
     return claims.Email, nil
+}
+
+func BlockUser(email string) error {
+	query := `UPDATE users SET is_blocked = TRUE WHERE email = $1`
+	result, err := config.DB.Exec(query, email)
+	if err != nil {
+		return fmt.Errorf("failed to block user: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("could not determine affected rows: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("user not found")
+	}
+
+	return nil
 }

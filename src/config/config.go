@@ -46,7 +46,8 @@ func createTables() {
 	userTable := `
 	CREATE TABLE IF NOT EXISTS users (
 		email VARCHAR(255) PRIMARY KEY,
-		password VARCHAR(255) NOT NULL
+		password VARCHAR(255) NOT NULL,
+		is_blocked BOOLEAN DEFAULT FALSE
 	);`
 
 	adminTable := `
