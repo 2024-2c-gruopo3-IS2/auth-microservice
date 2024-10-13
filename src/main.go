@@ -4,28 +4,35 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"auth-microservice/config"
 	"auth-microservice/controllers"
 )
 
 func main() {
-
-
 	config.InitDB()
 
 	router := gin.Default()
 
-	authRoutes := router.Group("/auth")
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://your-web-app.com"}, // Add your web app's URL here
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
+	authRoutes := router.Group("/auth")
 	{
 		authRoutes.POST("/signup", controllers.SignupHandler)
 		authRoutes.POST("/signin", controllers.SigninHandler)
 		authRoutes.GET("/get-email-from-token", controllers.GetEmailFromTokenHandler)
 		authRoutes.POST("/block-user", controllers.BlockUserHandler)
 		authRoutes.POST("/unblock-user", controllers.UnblockUserHandler)
-
 	}
 
 	port := os.Getenv("PORT")
