@@ -3,7 +3,7 @@ package services
 
 import (
 	"errors"
-
+	"fmt"
 	"auth-microservice/models"
 	"auth-microservice/repositories"
 	"auth-microservice/utils"
@@ -75,4 +75,13 @@ func UnblockUser(email string) error {
 		return errors.New("failed to unblock user")
 	}
 	return nil
+}
+
+func GetUsersStatus() ([]models.UserResponse, error) {
+	users, err := repositories.GetUsersStatus()
+	if err != nil {
+		fmt.Println(err)
+		return nil, errors.New("failed to get users status")
+	}
+	return users, nil
 }

@@ -33,6 +33,7 @@ func main() {
 		authRoutes.GET("/get-email-from-token", controllers.GetEmailFromTokenHandler)
 		authRoutes.POST("/block-user", controllers.BlockUserHandler)
 		authRoutes.POST("/unblock-user", controllers.UnblockUserHandler)
+		authRoutes.GET("/get-users-status", controllers.GetUsersStatusHandler)
 	}
 
 	port := os.Getenv("PORT")

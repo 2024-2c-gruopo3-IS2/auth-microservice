@@ -48,6 +48,16 @@ func UnblockUser(email string) error {
 	return nil
 }
 
+func GetUsersStatus() ([]models.UserResponse, error) {
+	var users []models.UserResponse
+	query := `SELECT email, is_blocked FROM users`
+	err := config.DB.Select(&users, query)
+	if err != nil {
+		return nil, errors.New("failed to get users status db")
+	}
+	return users, nil
+}
+
 func getTable(isAdmin bool) string {
 	if isAdmin {
 		return "admins"
