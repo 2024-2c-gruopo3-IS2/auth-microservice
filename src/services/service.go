@@ -31,21 +31,38 @@ func RegisterUser(email, password string, isAdmin bool) (*models.User, error) {
 
 // LoginUser handles login logic for users and admins
 func LoginUser(email, password string, isAdmin bool) (string, error) {
-	user, err := repositories.GetUserByEmail(email, isAdmin)
-	if err != nil || !utils.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("invalid credentials")
-	}
+	if isAdmin {
+		admin, err := repositories.GetAdminByEmail(email)
+		
+		if err != nil || !utils.CheckPasswordHash(password, admin.Password) {
+			return "", errors.New("invalid credentials")
+		}
 
-	if user.IsBlocked {
-		return "", errors.New("user is blocked")
-	}
+		token, err := utils.GenerateJWT(admin.Email)
+		if err != nil {
+			return "", err
+		}
 
-	token, err := utils.GenerateJWT(user.Email)
-	if err != nil {
-		return "", err
-	}
+		return token, nil
 
-	return token, nil
+	} else {
+		user, err := repositories.GetUserByEmail(email)
+
+		if err != nil || !utils.CheckPasswordHash(password, user.Password) {
+			return "", errors.New("invalid credentials")
+		}
+	
+		if user.IsBlocked {
+			return "", errors.New("user is blocked")
+		}
+	
+		token, err := utils.GenerateJWT(user.Email)
+		if err != nil {
+			return "", err
+		}
+	
+		return token, nil
+	}
 }
 
 

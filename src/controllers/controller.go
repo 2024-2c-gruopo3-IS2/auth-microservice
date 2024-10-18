@@ -3,7 +3,7 @@ package controllers
 
 import (
 	"net/http"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"auth-microservice/services"
 )
@@ -46,11 +46,14 @@ func SigninHandler(c *gin.Context) {
 		Password string `json:"password" binding:"required"`
 		IsAdmin  bool   `json:"is_admin"`
 	}
+	fmt.Println("1")
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println("2")
+
 
 	token, err := services.LoginUser(req.Email, req.Password, req.IsAdmin)
 	if err != nil {
@@ -62,6 +65,8 @@ func SigninHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
+	fmt.Println("3")
+
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

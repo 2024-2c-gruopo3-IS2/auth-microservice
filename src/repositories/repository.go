@@ -18,10 +18,19 @@ func CreateUser(user *models.User, isAdmin bool) error {
 	return nil
 }
 
-func GetUserByEmail(email string, isAdmin bool) (*models.User, error) {
+func GetAdminByEmail(email string) (*models.User, error) {
 	var user models.User
-	table := getTable(isAdmin)
-	query := "SELECT email, password, is_blocked FROM " + table + " WHERE email=$1"
+	query := "SELECT email, password FROM admins WHERE email=$1"
+	err := config.DB.Get(&user, query, email)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+	return &user, nil
+}
+
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	query := "SELECT email, password, is_blocked FROM users WHERE email=$1"
 	err := config.DB.Get(&user, query, email)
 	if err != nil {
 		return nil, errors.New("user not found")
