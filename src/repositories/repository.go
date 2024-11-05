@@ -73,3 +73,40 @@ func getTable(isAdmin bool) string {
 	}
 	return "users"
 }
+
+func SavePasswordResetToken(email, token string) error {
+	query := `INSERT INTO password_resets (email, token, created_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`
+	_, err := config.DB.Exec(query, email, token)
+	if err != nil {
+		return errors.New("failed to save password reset token")
+	}
+	return nil
+}
+
+func GetPasswordResetToken(email string) (models.ResetResponse, error) {
+	var reset models.ResetResponse
+	query := `SELECT token, created_at FROM password_resets WHERE email = $1`
+	err := config.DB.Get(&reset, query, email)
+	if err != nil {
+		return reset, errors.New("failed to get password reset token")
+	}
+	return reset, nil
+}
+
+func UpdatePassword(email, password string) error {
+	query := `UPDATE users SET password = $1 WHERE email = $2`
+	_, err := config.DB.Exec(query, password, email)
+	if err != nil {
+		return errors.New("failed to update password")
+	}
+	return nil
+}
+
+func DeletePasswordResetToken(email string) error {
+	query := `DELETE FROM password_resets WHERE email = $1`
+	_, err := config.DB.Exec(query, email)
+	if err != nil {
+		return errors.New("failed to delete password reset token")
+	}
+	return nil
+}

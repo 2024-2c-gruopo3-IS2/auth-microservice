@@ -7,6 +7,7 @@ import (
 	"auth-microservice/models"
 	"auth-microservice/repositories"
 	"auth-microservice/utils"
+	"time"
 )
 
 // RegisterUser handles registration logic for users and admins
@@ -101,4 +102,77 @@ func GetUsersStatus() ([]models.UserResponse, error) {
 		return nil, errors.New("failed to get users status")
 	}
 	return users, nil
+}
+
+func GeneratePasswordResetToken(email string) error {
+	if _, err := repositories.GetUserByEmail(email); err != nil {
+		return errors.New("user not found")
+	}
+
+	token, err := utils.GenerateJWT(email)
+	if err != nil {
+		return err
+	}
+
+	err = repositories.SavePasswordResetToken(email, token)
+	if err != nil {
+		return err
+	}
+
+	err = utils.SendPasswordResetEmail(email, token)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ResetPassword(email, password, token string) error {
+	_, err := repositories.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	fmt.Println("Email: ", email)
+
+	reset, err := repositories.GetPasswordResetToken(email)
+
+	fmt.Println("Reset Password Token: ", reset.Token)
+	fmt.Println("Created At: ", reset.CreatedAt)
+
+	createdAt, err := time.Parse(time.RFC3339, reset.CreatedAt)
+	if err != nil {
+		fmt.Println("Error converting created_at to time.Time:", err)
+		return err
+	}
+	
+
+	if err != nil {
+		return errors.New("invalid or expired token error")
+	}
+
+	fmt.Println("Token: ", token)
+	fmt.Println("Reset Token: ", reset)
+	fmt.Println("Password: ", password)
+
+	if reset.Token != token {
+		return errors.New("invalid or expired token diff token")
+	}
+
+	if createdAt.Add(15 * 60 * time.Second).Before(time.Now()) {
+		return errors.New("expired token")
+	}
+
+	hashedPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	err = repositories.UpdatePassword(email, hashedPassword)
+	if err != nil {
+		return err
+	}
+
+	repositories.DeletePasswordResetToken(email)
+
+	return nil
 }

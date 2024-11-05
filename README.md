@@ -15,3 +15,17 @@ curl -X GET https://auth-microservice-vvr6.onrender.com/auth/get-email-from-toke
 curl -X POST https://auth-microservice-vvr6.onrender.com/auth/block-user -H "Content-Type: application/json" -d '{"email": "brandon@example.com"}'
 
 curl -X POST https://auth-microservice-vvr6.onrender.com/auth/unblock-user -H "Content-Type: application/json" -d '{"email": "brandon@example.com"}'
+
+curl -X POST http://0.0.0.0:8080/auth/request-password-reset \
+-H "Content-Type: application/json" \
+-d '{"email": "user@example.com"}'
+
+curl -X POST http://0.0.0.0:8080/auth/password-reset \
+-H "Content-Type: application/json" \
+-d '{
+    "email": "tu_email@example.com",
+    "password": "tu_nueva_contraseña",
+    "token": "tu_token_aqui"
+}'
+
+

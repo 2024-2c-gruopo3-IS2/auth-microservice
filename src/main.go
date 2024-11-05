@@ -34,6 +34,8 @@ func main() {
 		authRoutes.POST("/block-user", controllers.BlockUserHandler)
 		authRoutes.POST("/unblock-user", controllers.UnblockUserHandler)
 		authRoutes.GET("/get-users-status", controllers.GetUsersStatusHandler)
+		authRoutes.POST("/request-password-reset", controllers.RequestPasswordResetHandler)
+		authRoutes.POST("/password-reset", controllers.ResetPasswordHandler)
 	}
 
 	port := os.Getenv("PORT")
