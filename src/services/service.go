@@ -114,6 +114,8 @@ func GeneratePasswordResetToken(email string) error {
 		return err
 	}
 
+	repositories.DeletePasswordResetToken(email)
+
 	err = repositories.SavePasswordResetToken(email, token)
 	if err != nil {
 		return err
