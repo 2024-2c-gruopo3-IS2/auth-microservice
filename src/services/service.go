@@ -178,3 +178,47 @@ func ResetPassword(email, password, token string) error {
 
 	return nil
 }
+
+func GeneratePin(email string) error {
+	fmt.Println("Email: ", email)
+	pin := utils.GenerateRandomString(6)
+	fmt.Println("Pin: ", pin)
+	repositories.DeletePin(email)
+	err := repositories.SavePin(email, pin)
+
+	if err != nil {
+		return err
+	}
+
+	err = utils.SendPinEmail(email, pin)
+	if err != nil {
+		return err
+	}
+
+	return nil;
+}
+
+func VerifyPin(email, pin string) error {
+	savedPin, err := repositories.GetPin(email)
+	if err != nil {
+		return errors.New("invalid pin")
+	}
+
+	if savedPin.Pin != pin {
+		return errors.New("invalid pin")
+	}
+
+	repositories.DeletePin(email)
+
+	createdAt, err := time.Parse(time.RFC3339, savedPin.CreatedAt)
+	if err != nil {
+		fmt.Println("Error converting created_at to time.Time:", err)
+		return err
+	}
+
+	if createdAt.Add(1 * 60 * time.Second).Before(time.Now()) {
+		return errors.New("expired pin")
+	}
+
+	return nil
+}

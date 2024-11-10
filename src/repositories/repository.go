@@ -110,3 +110,31 @@ func DeletePasswordResetToken(email string) error {
 	}
 	return nil
 }
+
+func SavePin(email, pin string) error {
+	query := `INSERT INTO pins (email, pin, created_at) VALUES ($1, $2, CURRENT_TIMESTAMP)`
+	_, err := config.DB.Exec(query, email, pin)
+	if err != nil {
+		return errors.New("failed to save pin")
+	}
+	return nil
+}
+
+func GetPin(email string) (models.PinResponse, error) {
+	var pin models.PinResponse
+	query := `SELECT pin, created_at FROM pins WHERE email = $1`
+	err := config.DB.Get(&pin, query, email)
+	if err != nil {
+		return pin, errors.New("failed to get pin")
+	}
+	return pin, nil
+}
+
+func DeletePin(email string) error {
+	query := `DELETE FROM pins WHERE email = $1`
+	_, err := config.DB.Exec(query, email)
+	if err != nil {
+		return errors.New("failed to delete pin")
+	}
+	return nil
+}

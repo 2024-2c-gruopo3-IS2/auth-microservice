@@ -28,4 +28,12 @@ curl -X POST http://0.0.0.0:8080/auth/password-reset \
     "token": "tu_token_aqui"
 }'
 
+curl -X POST http://0.0.0.0:8080/auth/generate-pin -H "Content-Type: application/json" -d '{
+    "email": "martinscazzola01@gmail.com"
+}'
+
+curl -X POST http://0.0.0.0:8080/auth/verify-pin -H "Content-Type: application/json" -d '{
+    "email": "martinscazzola01@gmail.com", "pin":"THLcOf"
+}'
+
 

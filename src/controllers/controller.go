@@ -200,3 +200,59 @@ func ResetPasswordHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "password successfully reset"})
 }
+
+func GeneratePinHandler(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := services.GeneratePin(req.Email)
+	if err != nil {
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "pin generated"})
+}
+
+func VerifyPinHandler(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+		Pin   string `json:"pin" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := services.VerifyPin(req.Email, req.Pin)
+	if err != nil {
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			return
+		}
+		if err.Error() == "invalid pin" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid pin"})
+			return
+		}
+		if err.Error() == "expired pin" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "expired pin"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "pin verified"})
+}
+

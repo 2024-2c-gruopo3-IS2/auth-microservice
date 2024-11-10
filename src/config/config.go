@@ -66,6 +66,13 @@ func createTables() {
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);`
 
+	pins := `
+	CREATE TABLE IF NOT EXISTS pins (
+		email VARCHAR(255) PRIMARY KEY,
+		pin VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);`
+
 	_, err := DB.Exec(userTable)
 	if err != nil {
 		log.Fatalf("Failed to create users table: %v", err)
@@ -79,6 +86,11 @@ func createTables() {
 	_, err = DB.Exec(passwordResetTable)
 	if err != nil {
 		log.Fatalf("Failed to create password_resets table: %v", err)
+	}
+
+	_, err = DB.Exec(pins)
+	if err != nil {
+		log.Fatalf("Failed to create pins table: %v", err)
 	}
 
 	fmt.Println("Tables are created or already exist")

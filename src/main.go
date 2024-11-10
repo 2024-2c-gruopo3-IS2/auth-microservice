@@ -36,6 +36,8 @@ func main() {
 		authRoutes.GET("/get-users-status", controllers.GetUsersStatusHandler)
 		authRoutes.POST("/request-password-reset", controllers.RequestPasswordResetHandler)
 		authRoutes.POST("/password-reset", controllers.ResetPasswordHandler)
+		authRoutes.POST("/generate-pin", controllers.GeneratePinHandler)
+		authRoutes.POST("/verify-pin", controllers.VerifyPinHandler)
 	}
 
 	port := os.Getenv("PORT")

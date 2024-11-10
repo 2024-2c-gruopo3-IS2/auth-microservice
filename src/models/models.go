@@ -16,3 +16,8 @@ type ResetResponse struct {
 	Token string `db:"token" json:"token"`
 	CreatedAt string `db:"created_at" json:"created_at"`
 }
+
+type PinResponse struct {
+	Pin string `db:"pin" json:"pin"`
+	CreatedAt string `db:"created_at" json:"created_at"`
+}
