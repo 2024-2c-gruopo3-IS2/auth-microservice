@@ -36,4 +36,8 @@ curl -X POST http://0.0.0.0:8080/auth/verify-pin -H "Content-Type: application/j
     "email": "martinscazzola01@gmail.com", "pin":"THLcOf"
 }'
 
+curl -X POST http://0.0.0.0:8080/auth/signin-with-google -H "Content-Type: application/json" -d '{
+    "email": "martinscazzola01@gmail.com"
+}'
+
 

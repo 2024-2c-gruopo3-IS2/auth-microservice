@@ -38,6 +38,7 @@ func main() {
 		authRoutes.POST("/password-reset", controllers.ResetPasswordHandler)
 		authRoutes.POST("/generate-pin", controllers.GeneratePinHandler)
 		authRoutes.POST("/verify-pin", controllers.VerifyPinHandler)
+		authRoutes.POST("/signin-with-google", controllers.SignInGoogleHandler)
 	}
 
 	port := os.Getenv("PORT")

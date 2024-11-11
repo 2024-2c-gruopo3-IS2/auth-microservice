@@ -222,3 +222,21 @@ func VerifyPin(email, pin string) error {
 
 	return nil
 }
+
+func LoginUserWithGoogle(email string) (string, error) {
+	user, err := repositories.GetUserByEmail(email)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	if user.IsBlocked {
+		return "", errors.New("user is blocked")
+	}
+
+	token, err := utils.GenerateJWT(user.Email)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}

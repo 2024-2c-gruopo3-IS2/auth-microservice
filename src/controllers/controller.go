@@ -256,3 +256,21 @@ func VerifyPinHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pin verified"})
 }
 
+func SignInGoogleHandler(c *gin.Context) {
+	var req struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := services.LoginUserWithGoogle(req.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
+}
