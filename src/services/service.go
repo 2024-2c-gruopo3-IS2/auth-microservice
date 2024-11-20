@@ -47,18 +47,41 @@ func LoginUser(email, password string, isAdmin bool) (string, error) {
 		return token, nil
 
 	} else {
+		fmt.Println("Email: ", email)
 		user, err := repositories.GetUserByEmail(email)
+		fmt.Println("User: ", user)
 
 		if err != nil || !utils.CheckPasswordHash(password, user.Password) {
+			fmt.Println("Error: ", err)
 			return "", errors.New("invalid credentials")
 		}
-	
-		if user.IsBlocked {
-			return "", errors.New("user is blocked")
+
+		block, err := repositories.GetBlockByEmail(email)
+		fmt.Println("Block: ", block)
+
+		if err == nil {
+			fmt.Println("entra a block: ", block)
+			// chequear si el bloqueo ya expiró
+			createdAt, err := time.Parse(time.RFC3339, block.CreatedAt)
+			if err != nil {
+				fmt.Println("Error converting created_at to time.Time:", err)
+				return "", err
+			}
+			if createdAt.Add(time.Duration(block.Days) * 24 * time.Hour).Before(time.Now()) {
+				fmt.Println("Unblock user")
+				repositories.UnblockUser(email)
+			} else {
+				fmt.Println("User is blocked")
+				return "", errors.New("user is blocked")
+			}
+
 		}
 	
 		token, err := utils.GenerateJWT(user.Email)
+
+		fmt.Println("Token: ", token)
 		if err != nil {
+			print("Error token: ", err)
 			return "", err
 		}
 	
@@ -76,9 +99,14 @@ func GetEmailFromToken(token string) (string, error) {
     return claims.Email, nil
 }
 
-func BlockUser(email string) error {
+func BlockUser(email string, reason string, days int) error {
 
-	err := repositories.BlockUser(email)
+	_, err := repositories.GetUserByEmail(email)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	err = repositories.BlockUser(email, reason, days)
 
 	if err != nil {
 		return errors.New("failed to block user")

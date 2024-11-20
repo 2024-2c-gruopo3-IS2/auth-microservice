@@ -49,8 +49,7 @@ func createTables() {
 	userTable := `
 	CREATE TABLE IF NOT EXISTS users (
 		email VARCHAR(255) PRIMARY KEY,
-		password VARCHAR(255) NOT NULL,
-		is_blocked BOOLEAN DEFAULT FALSE
+		password VARCHAR(255) NOT NULL
 	);`
 
 	adminTable := `
@@ -73,6 +72,14 @@ func createTables() {
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);`
 
+	blocks := `
+	CREATE TABLE IF NOT EXISTS blocks (
+		email VARCHAR(255) PRIMARY KEY,
+		reason VARCHAR(255) NOT NULL,
+		days INT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);`
+
 	_, err := DB.Exec(userTable)
 	if err != nil {
 		log.Fatalf("Failed to create users table: %v", err)
@@ -92,6 +99,12 @@ func createTables() {
 	if err != nil {
 		log.Fatalf("Failed to create pins table: %v", err)
 	}
+
+	_, err = DB.Exec(blocks)
+	if err != nil {
+		log.Fatalf("Failed to create blocks table: %v", err)
+	}
+
 
 	fmt.Println("Tables are created or already exist")
 }

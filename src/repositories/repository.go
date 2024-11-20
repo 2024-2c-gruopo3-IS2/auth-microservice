@@ -30,7 +30,7 @@ func GetAdminByEmail(email string) (*models.User, error) {
 
 func GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
-	query := "SELECT email, password, is_blocked FROM users WHERE email=$1"
+	query := "SELECT email, password FROM users WHERE email=$1"
 	err := config.DB.Get(&user, query, email)
 	if err != nil {
 		return nil, errors.New("user not found")
@@ -38,10 +38,10 @@ func GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
-func BlockUser(email string) error {
-
-	query := `UPDATE users SET is_blocked = TRUE WHERE email = $1`
-	_, err := config.DB.Exec(query, email)
+func BlockUser(email string, reason string, days int) error {
+	query := `INSERT INTO blocks (email, reason, days, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+			  ON CONFLICT (email) DO UPDATE SET reason = EXCLUDED.reason, days = EXCLUDED.days, created_at = EXCLUDED.created_at`
+	_, err := config.DB.Exec(query, email, reason, days)
 	if err != nil {
 		return errors.New("failed to block user")
 	}
@@ -49,7 +49,7 @@ func BlockUser(email string) error {
 }
 
 func UnblockUser(email string) error {
-	query := `UPDATE users SET is_blocked = FALSE WHERE email = $1`
+	query := `DELETE FROM blocks WHERE email = $1`
 	_, err := config.DB.Exec(query, email)
 	if err != nil {
 		return errors.New("failed to unblock user")
@@ -137,4 +137,14 @@ func DeletePin(email string) error {
 		return errors.New("failed to delete pin")
 	}
 	return nil
+}
+
+func GetBlockByEmail(email string) (models.Block, error) {
+	var block models.Block
+	query := `SELECT reason, days, created_at FROM blocks WHERE email = $1`
+	err := config.DB.Get(&block, query, email)
+	if err != nil {
+		return block, errors.New("failed to get block")
+	}
+	return block, nil
 }

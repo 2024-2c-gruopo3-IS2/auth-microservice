@@ -94,6 +94,8 @@ func GetEmailFromTokenHandler(c *gin.Context) {
 func BlockUserHandler(c *gin.Context) {
 	var req struct {
 		Email string `json:"email" binding:"required,email"`
+		Reason string `json:"reason" binding:"required"`
+		Days int `json:"days" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -101,7 +103,7 @@ func BlockUserHandler(c *gin.Context) {
 		return
 	}
 
-	err := services.BlockUser(req.Email)
+	err := services.BlockUser(req.Email, req.Reason, req.Days)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})

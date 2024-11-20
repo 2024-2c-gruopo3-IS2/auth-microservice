@@ -21,3 +21,9 @@ type PinResponse struct {
 	Pin string `db:"pin" json:"pin"`
 	CreatedAt string `db:"created_at" json:"created_at"`
 }
+
+type Block struct {
+	Reason string `db:"reason" json:"reason"`
+	Days int `db:"days" json:"days"`
+	CreatedAt string `db:"created_at" json:"created_at"`
+}
