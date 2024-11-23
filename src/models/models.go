@@ -7,9 +7,11 @@ type User struct {
 	IsBlocked bool `db:"is_blocked" json:"-"`
 }
 
-type UserResponse struct {
+type BlockUser struct {
 	Email    string `db:"email" json:"email"`
-	IsBlocked bool `db:"is_blocked" json:"is_blocked"`
+	Reason string `db:"reason" json:"reason"`
+	Days int `db:"days" json:"days"`
+	CreatedAt string `db:"created_at" json:"created_at"`
 }
 
 type ResetResponse struct {

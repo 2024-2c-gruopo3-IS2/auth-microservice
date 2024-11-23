@@ -57,16 +57,6 @@ func UnblockUser(email string) error {
 	return nil
 }
 
-func GetUsersStatus() ([]models.UserResponse, error) {
-	var users []models.UserResponse
-	query := `SELECT email, is_blocked FROM users`
-	err := config.DB.Select(&users, query)
-	if err != nil {
-		return nil, errors.New("failed to get users status db")
-	}
-	return users, nil
-}
-
 func getTable(isAdmin bool) string {
 	if isAdmin {
 		return "admins"
@@ -147,4 +137,14 @@ func GetBlockByEmail(email string) (models.Block, error) {
 		return block, errors.New("failed to get block")
 	}
 	return block, nil
+}
+
+func GetBlockedUsers() ([]models.BlockUser, error) {
+	var blocks []models.BlockUser
+	query := `SELECT email, reason, days, created_at FROM blocks`
+	err := config.DB.Select(&blocks, query)
+	if err != nil {
+		return blocks, errors.New("failed to get blocked users")
+	}
+	return blocks, nil
 }

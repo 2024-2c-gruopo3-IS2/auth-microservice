@@ -123,15 +123,6 @@ func UnblockUser(email string) error {
 	return nil
 }
 
-func GetUsersStatus() ([]models.UserResponse, error) {
-	users, err := repositories.GetUsersStatus()
-	if err != nil {
-		fmt.Println(err)
-		return nil, errors.New("failed to get users status")
-	}
-	return users, nil
-}
-
 func GeneratePasswordResetToken(email string) error {
 	if _, err := repositories.GetUserByEmail(email); err != nil {
 		return errors.New("user not found")
@@ -267,4 +258,38 @@ func LoginUserWithGoogle(email string) (string, error) {
 	}
 
 	return token, nil
+}
+
+func isBlockActive(createdAt string, days int) (bool, error) {
+	fmt.Println("CreatedAt: ", createdAt)
+	fmt.Println("Days: ", days)
+	parsedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", createdAt)
+
+	if err != nil {
+		return false, err
+	}
+	expiration := parsedTime.AddDate(0, 0, days) 
+	return time.Now().Before(expiration), nil
+}
+
+func GetBlockedUsers() ([]models.BlockUser, error) {
+	users, err := repositories.GetBlockedUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	var activeUsers []models.BlockUser
+
+	for _, user := range users {
+		active, err := isBlockActive(user.CreatedAt, user.Days)
+		if err != nil {
+			return nil, errors.New("error processing block dates")
+		}
+
+		if active {
+			activeUsers = append(activeUsers, user)
+		}
+	}
+
+	return activeUsers, nil
 }

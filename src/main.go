@@ -33,12 +33,12 @@ func main() {
 		authRoutes.GET("/get-email-from-token", controllers.GetEmailFromTokenHandler)
 		authRoutes.POST("/block-user", controllers.BlockUserHandler)
 		authRoutes.POST("/unblock-user", controllers.UnblockUserHandler)
-		authRoutes.GET("/get-users-status", controllers.GetUsersStatusHandler)
 		authRoutes.POST("/request-password-reset", controllers.RequestPasswordResetHandler)
 		authRoutes.POST("/password-reset", controllers.ResetPasswordHandler)
 		authRoutes.POST("/generate-pin", controllers.GeneratePinHandler)
 		authRoutes.POST("/verify-pin", controllers.VerifyPinHandler)
 		authRoutes.POST("/signin-with-google", controllers.SignInGoogleHandler)
+		authRoutes.GET("/get-blocked-users", controllers.GetBlockedUsersHandler)
 	}
 
 	port := os.Getenv("PORT")
